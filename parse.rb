@@ -2,8 +2,6 @@
 # Syntax: ruby parse.rb [input_file_name] [output_file_name]
 # Example: ruby parse.rb test/college/college_dump.sql test/college/college_output.md
 
-
-
 private def creates_table?(line)
   line.start_with?('CREATE')
 end
@@ -11,6 +9,48 @@ end
 private def alters_table?(line)
   line.start_with?('ALTER TABLE')
 end
+
+private def get_table_name_from_create(line)
+  pieces = line.split(' ')
+  raw_table_name = pieces[2]
+  table_name = raw_table_name.include?('.') ? raw_table_name.split('.')[1] : raw_table_name
+  table_name
+end
+
+private def get_table_name_from_alter(line)
+  pieces = line.split(' ')
+  raw_table_name = pieces[3]
+  table_name = raw_table_name.include?('.') ? raw_table_name.split('.')[1] : raw_table_name
+  table_name
+end
+
+private def get_fk_table_name_from_alter(line)
+  pieces = line.split('REFERENCES')
+  raw_table_name = pieces[1]
+  table_name = raw_table_name.include?('.') ? raw_table_name.split('.')[1] : raw_table_name
+  table_name.split('(')[0]
+end
+
+private def get_column_data(attrs)
+  pairs = []
+  attrs.each do |a|
+    pieces = a.strip.split(' ')
+    data_type = map_data_type(pieces[1..-1].join('_'))
+    pairs.append([data_type, pieces[0]])
+  end
+  pairs
+end
+
+private def map_data_type(raw_data_type)
+  if /integer/i.match?(raw_data_type)
+    'int'
+  elsif /character_varying/i.match?(raw_data_type)
+    'text'
+  else
+    raw_data_type
+  end
+end
+
 
 def main(input_file_name, output_file_name)
   tables = []
@@ -49,15 +89,19 @@ def main(input_file_name, output_file_name)
   output_file = File.open(output_file_name, 'w')
   output_file.write("erDiagram\n")
   tables.each do |t|
-    pieces = t.split(' ')
-    raw_table_name = pieces[2]
-    table_name = raw_table_name.include?('.') ? raw_table_name.split('.')[1] : raw_table_name
-    output_file.write("\t#{table_name} {}\n")
+    table_name = get_table_name_from_create(t)
+    attrs = t.split("\n")[1...-1]
+    attr_pairs = get_column_data(attrs)
+    output_file.write("\t#{table_name} {\n")
+    attr_pairs.each do |data_type, column_name|
+      output_file.write("\t\t#{data_type} #{column_name}\n")
+    end
+    output_file.write("\t}\n")
   end
   alters.each do |a|
     if a.include?('FOREIGN KEY')
-      table_name = a.split(' ')[3].split('.')[1]
-      fk_table_name = a.split('REFERENCES')[1].split('.')[1].split('(')[0]
+      table_name = get_table_name_from_alter(a)
+      fk_table_name = get_fk_table_name_from_alter(a)
       output_file.write("\t#{table_name} }|--|| #{fk_table_name} : \"\"\n")
     end
   end

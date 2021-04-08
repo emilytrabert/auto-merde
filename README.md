@@ -1,4 +1,4 @@
-# auto-merde
+# :poop: auto-merde
 Automated Mermaid.js Entity Relationship DiagramEr
 
 Takes the output of pg_dump and creates a Mermaid.js markdown file.
