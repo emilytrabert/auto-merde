@@ -3,6 +3,9 @@ erDiagram
 		int id
 		text name
 		int professor_id
+		timestamp start_date
+		boolean is_full
+		text description
 	}
 	enrollment {
 		int id

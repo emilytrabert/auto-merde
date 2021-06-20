@@ -25,26 +25,71 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.courses (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     name character varying(20),
-    professor_id integer
+    professor_id integer,
+    start_date timestamp without time zone,
+    is_full boolean,
+    description text
 );
 
 
 ALTER TABLE public.courses OWNER TO emilytrabert;
 
 --
+-- Name: course_id_sequence; Type: SEQUENCE; Schema: public; Owner: emilytrabert
+--
+
+CREATE SEQUENCE public.course_id_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.course_id_sequence OWNER TO emilytrabert;
+
+--
+-- Name: course_id_sequence; Type: SEQUENCE OWNED BY; Schema: public; Owner: emilytrabert
+--
+
+ALTER SEQUENCE public.course_id_sequence OWNED BY public.courses.id;
+
+
+--
 -- Name: enrollment; Type: TABLE; Schema: public; Owner: emilytrabert
 --
 
 CREATE TABLE public.enrollment (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     course_id integer,
-    student_id integer
+    student_id bigint
 );
 
 
 ALTER TABLE public.enrollment OWNER TO emilytrabert;
+
+--
+-- Name: enrollment_id_sequence; Type: SEQUENCE; Schema: public; Owner: emilytrabert
+--
+
+CREATE SEQUENCE public.enrollment_id_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.enrollment_id_sequence OWNER TO emilytrabert;
+
+--
+-- Name: enrollment_id_sequence; Type: SEQUENCE OWNED BY; Schema: public; Owner: emilytrabert
+--
+
+ALTER SEQUENCE public.enrollment_id_sequence OWNED BY public.enrollment.id;
+
 
 --
 -- Name: professors; Type: TABLE; Schema: public; Owner: emilytrabert
@@ -60,17 +105,59 @@ CREATE TABLE public.professors (
 ALTER TABLE public.professors OWNER TO emilytrabert;
 
 --
+-- Name: professor_id_sequence; Type: SEQUENCE; Schema: public; Owner: emilytrabert
+--
+
+CREATE SEQUENCE public.professor_id_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.professor_id_sequence OWNER TO emilytrabert;
+
+--
+-- Name: professor_id_sequence; Type: SEQUENCE OWNED BY; Schema: public; Owner: emilytrabert
+--
+
+ALTER SEQUENCE public.professor_id_sequence OWNED BY public.professors.id;
+
+
+--
 -- Name: students; Type: TABLE; Schema: public; Owner: emilytrabert
 --
 
 CREATE TABLE public.students (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     f_name character varying(20),
     l_name character varying(20)
 );
 
 
 ALTER TABLE public.students OWNER TO emilytrabert;
+
+--
+-- Name: student_id_sequence; Type: SEQUENCE; Schema: public; Owner: emilytrabert
+--
+
+CREATE SEQUENCE public.student_id_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.student_id_sequence OWNER TO emilytrabert;
+
+--
+-- Name: student_id_sequence; Type: SEQUENCE OWNED BY; Schema: public; Owner: emilytrabert
+--
+
+ALTER SEQUENCE public.student_id_sequence OWNED BY public.students.id;
+
 
 --
 -- Name: courses courses_pkey; Type: CONSTRAINT; Schema: public; Owner: emilytrabert
